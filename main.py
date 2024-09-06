@@ -17,24 +17,28 @@ class DatabaseManager:
     def __init__(self, file_name: str):
         self.connection = sqlite3.connect(file_name)
         self.cursor = self.connection.cursor()
+        self.cursor.execute("DROP TABLE IF EXISTS Professors")
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS Professors (
+                            id INTEGER PRIMARY KEY, 
+                            name TEXT NOT NULL,
+                            avatar TEXT NOT NULL,
+                            objectivity INTEGER NOT NULL,
+                            loyalty INTEGER NOT NULL,
+                            professionalism INTEGER NOT NULL,
+                            harshness INTEGER NOT NULL
+                            )""")
 
     def write_to_db(self, professor_data: Professor):
         self.cursor.execute("""
-            INSERT INTO professors (name, avatar, objectivity, loyalty, professionalism, harshness)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (
-            professor_data.name,
-            professor_data.avatar,
-            professor_data.objectivity,
-            professor_data.loyalty,
-            professor_data.professionalism,
-            professor_data.harshness
-        ))
+            INSERT INTO Professors (name, avatar, objectivity, loyalty, professionalism, harshness)
+            VALUES (?, ?, ?, ?, ?, ?)""", 
+            (professor_data.name,professor_data.avatar,professor_data.objectivity,
+             professor_data.loyalty,professor_data.professionalism,professor_data.harshness)
+        )
         self.connection.commit()
 
 
-# manager = DatabaseManager('C:\\Users\\gomol\\FlutterProjects\\PolyInsideBackend\\db.sqlite')  # ???
-manager = DatabaseManager('C:\\Users\\user\\PycharmProjects\\PolyParser\\db.sqlite')
+manager = DatabaseManager('db.sqlite')
 
 first_page_link = 'https://www.spbstu.ru/university/about-the-university/staff/'
 links = [first_page_link]
@@ -52,7 +56,11 @@ for li_tag in range(2, len(pages_li), 2):
         pass
 
 for i in range(2, last_page + 1):
-    links.append(f'''https://www.spbstu.ru/university/about-the-university/staff/?arrFilter_ff%5BNAME%5D=&arrFilter_pf%5BPOSITION%5D=&arrFilter_pf%5BSCIENCE_TITLE%5D=&arrFilter_pf%5BSECTION_ID_1%5D=849&arrFilter_pf%5BSECTION_ID_2%5D=&arrFilter_pf%5BSECTION_ID_3%5D=&del_filter=%D0%A1%D0%B1%D1%80%D0%BE%D1%81%D0%B8%D1%82%D1%8C&PAGEN_1={i}&SIZEN_1=20''')
+    links.append("https://www.spbstu.ru/university/about-the-university/staff/?arrFilter_ff%5BNAME%5D=&" +
+                 "arrFilter_pf%5BPOSITION%5D=&arrFilter_pf%5BSCIENCE_TITLE%5D=&arrFilter_pf%5BSECTION_ID_1%5D=849&" +
+                 "arrFilter_pf%5BSECTION_ID_2%5D=&arrFilter_pf%5BSECTION_ID_3%5D=&" +
+                 f"del_filter=%D0%A1%D0%B1%D1%80%D0%BE%D1%81%D0%B8%D1%82%D1%8C&PAGEN_1={i}&SIZEN_1=20"
+                 )
 
 
 def simple_parce(tag, tag_class):
