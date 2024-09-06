@@ -7,10 +7,6 @@ import sqlite3
 class Professor(NamedTuple):
     name: str
     avatar: str
-    objectivity: float = 1.0
-    loyalty: float = 1.0
-    professionalism: float = 1.0
-    harshness: float = 1.0
 
 
 class DatabaseManager:
@@ -21,19 +17,14 @@ class DatabaseManager:
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS Professors (
                             id INTEGER PRIMARY KEY, 
                             name TEXT NOT NULL,
-                            avatar TEXT NOT NULL,
-                            objectivity INTEGER NOT NULL,
-                            loyalty INTEGER NOT NULL,
-                            professionalism INTEGER NOT NULL,
-                            harshness INTEGER NOT NULL
+                            avatar TEXT NOT NULL
                             )""")
 
     def write_to_db(self, professor_data: Professor):
         self.cursor.execute("""
-            INSERT INTO Professors (name, avatar, objectivity, loyalty, professionalism, harshness)
-            VALUES (?, ?, ?, ?, ?, ?)""", 
-            (professor_data.name,professor_data.avatar,professor_data.objectivity,
-             professor_data.loyalty,professor_data.professionalism,professor_data.harshness)
+            INSERT INTO Professors (name, avatar)
+            VALUES (?, ?)""",
+            (professor_data.name,professor_data.avatar)
         )
         self.connection.commit()
 
